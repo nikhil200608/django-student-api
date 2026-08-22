@@ -84,16 +84,25 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
+MYSQL_HOST = os.environ.get('MYSQL_HOST', 'localhost')
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'my_project_db',
-        'USER': 'root',
+        'NAME': os.environ.get('MYSQL_DATABASE', 'my_project_db'),
+        'USER': os.environ.get('MYSQL_USER', 'root'),
         'PASSWORD': os.environ.get('MYSQL_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'HOST': MYSQL_HOST,
+        'PORT': os.environ.get('MYSQL_PORT', '3306'),
     }
 }
+
+if os.environ.get('MYSQL_SSL', 'false').lower() == 'true':
+    DATABASES['default']['OPTIONS'] = {
+        'ssl': {
+            'ca': str(BASE_DIR / 'ca.pem'),
+        }
+    }
 
 
 # Password validation
