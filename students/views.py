@@ -80,10 +80,22 @@ def student_delete(request, id):
 # TOKEN-PROTECTED API VIEWS
 # =========================
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def create_student_api(request):
+
+    # GET request: database se sabhi students read karega
+    if request.method == 'GET':
+        students = Student.objects.all()
+        serializer = StudentSerializer(students, many=True)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
+
+    # POST request: naya student create karega
     serializer = StudentSerializer(data=request.data)
 
     if serializer.is_valid():
@@ -91,12 +103,12 @@ def create_student_api(request):
 
         return Response(
             serializer.data,
-            status=status.HTTP_201_CREATED,
+            status=status.HTTP_201_CREATED
         )
 
     return Response(
         serializer.errors,
-        status=status.HTTP_400_BAD_REQUEST,
+        status=status.HTTP_400_BAD_REQUEST
     )
 
 
